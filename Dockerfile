@@ -1,6 +1,6 @@
 FROM golang:1.8.3-alpine AS builder
 
-ENV HOVERFLY_VERSION 0.14.0
+ENV HOVERFLY_VERSION 0.14.2
 ADD https://github.com/SpectoLabs/hoverfly/archive/v${HOVERFLY_VERSION}.zip /tmp/hoverfly_sources.zip
 
 ENV SOURCE_DIR /go/src/github.com/SpectoLabs
