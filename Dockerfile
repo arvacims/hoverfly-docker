@@ -13,5 +13,4 @@ RUN go install github.com/SpectoLabs/hoverfly/core/cmd/hoverfly/
 
 FROM alpine:3.6
 COPY --from=builder /go/bin/hoverfly /
-EXPOSE 8500 8888
 ENTRYPOINT ["/hoverfly"]
