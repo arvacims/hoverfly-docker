@@ -1,6 +1,6 @@
-FROM golang:1.10-alpine3.7 AS builder
+FROM golang:1.11-alpine3.9 AS builder
 
-ENV HOVERFLY_VERSION 0.16.0
+ENV HOVERFLY_VERSION 1.0.0
 ADD https://github.com/SpectoLabs/hoverfly/archive/v${HOVERFLY_VERSION}.zip /tmp/hoverfly_sources.zip
 
 ENV SOURCE_DIR /go/src/github.com/SpectoLabs
@@ -11,6 +11,6 @@ RUN mkdir -p ${SOURCE_DIR} \
 ENV GO15VENDOREXPERIMENT 1
 RUN go install github.com/SpectoLabs/hoverfly/core/cmd/hoverfly/
 
-FROM alpine:3.7
+FROM alpine:3.9
 COPY --from=builder /go/bin/hoverfly /
 ENTRYPOINT ["/hoverfly"]
