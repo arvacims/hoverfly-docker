@@ -1,16 +1,16 @@
-FROM golang:1.11-alpine3.9 AS builder
+FROM golang:1.14.2 AS build-env
 
-ENV HOVERFLY_VERSION 1.0.0
-ADD https://github.com/SpectoLabs/hoverfly/archive/v${HOVERFLY_VERSION}.zip /tmp/hoverfly_sources.zip
+ENV HOVERFLY_VERSION 1.3.1
+ADD https://github.com/SpectoLabs/hoverfly/archive/v${HOVERFLY_VERSION}.tar.gz /tmp/hoverfly_sources.tar.gz
 
-ENV SOURCE_DIR /go/src/github.com/SpectoLabs
+ENV SOURCE_DIR /usr/local/go/src/github.com/SpectoLabs
 RUN mkdir -p ${SOURCE_DIR} \
-    && unzip /tmp/hoverfly_sources.zip -d ${SOURCE_DIR}/ \
+    && tar -xzf /tmp/hoverfly_sources.tar.gz -C ${SOURCE_DIR}/ \
     && mv ${SOURCE_DIR}/hoverfly-${HOVERFLY_VERSION} ${SOURCE_DIR}/hoverfly
 
-ENV GO15VENDOREXPERIMENT 1
-RUN go install github.com/SpectoLabs/hoverfly/core/cmd/hoverfly/
+RUN cd ${SOURCE_DIR}/hoverfly/core/cmd/hoverfly && CGO_ENABLED=0 GOOS=linux go install -ldflags "-s -w"
 
-FROM alpine:3.9
-COPY --from=builder /go/bin/hoverfly /
-ENTRYPOINT ["/hoverfly"]
+FROM alpine:3.13.2
+RUN apk --no-cache add ca-certificates
+COPY --from=build-env /usr/local/go/bin/hoverfly /bin/hoverfly
+ENTRYPOINT ["/bin/hoverfly", "-listen-on-host=0.0.0.0"]
